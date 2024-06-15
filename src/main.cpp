@@ -2,12 +2,12 @@
 #include <WiFi.h>
 #include <HTTPClient.h>
 
-// Configurações Wi-Fi
-const char* ssid = "Vuoi un pezzetto di formaggio?";
-const char* password = "vabenecosi@2908";
+// Configurações Wi-Fi (definidas como macros)
+const char* ssid = WIFI_SSID;
+const char* password = WIFI_PASSWORD;
 
 // Configuração do endpoint do backend
-const char* serverName = "http://172.16.1.125:3000/api/sensor";
+const char* serverName = SERVER_NAME;
 
 // Pino de leitura do sensor
 const int soilMoisturePin = 36; // GPIO36 (VP)
