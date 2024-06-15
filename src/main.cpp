@@ -1,9 +1,13 @@
 #include <Arduino.h>
 #include <WiFi.h>
+#include <HTTPClient.h>
 
 // Configurações Wi-Fi
 const char* ssid = "Vuoi un pezzetto di formaggio?";
 const char* password = "vabenecosi@2908";
+
+// Configuração do endpoint do backend
+const char* serverName = "http://172.16.1.125:3000/api/sensor";
 
 // Pino de leitura do sensor
 const int soilMoisturePin = 36; // GPIO36 (VP)
@@ -60,6 +64,31 @@ void loop() {
   Serial.print("%) - ");
   Serial.println(condition);
 
-  // Aguarda 1 segundo antes da próxima leitura
-  delay(1000);
+  // Envia os dados para o backend
+  if (WiFi.status() == WL_CONNECTED) {
+    HTTPClient http;
+    http.begin(serverName);
+    http.addHeader("Content-Type", "application/json");
+
+    // Dados do sensor a serem enviados
+    String httpRequestData = "{\"moisture\":" + String(moisturePercent) + "}";
+
+    int httpResponseCode = http.POST(httpRequestData);
+
+    if (httpResponseCode > 0) {
+      String response = http.getString();
+      Serial.println(httpResponseCode);
+      Serial.println(response);
+    } else {
+      Serial.print("Erro ao enviar o POST: ");
+      Serial.println(httpResponseCode);
+    }
+
+    http.end();
+  } else {
+    Serial.println("Erro na conexão WiFi");
+  }
+
+  // Aguarda 5 min segundo antes da próxima leitura
+  delay(300000);
 }
